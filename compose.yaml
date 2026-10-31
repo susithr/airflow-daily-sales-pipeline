@@ -19,6 +19,7 @@ services:
       POSTGRES_DB: sales
     volumes:
       - sales_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d:ro
 
 volumes:
   airflow_home:
