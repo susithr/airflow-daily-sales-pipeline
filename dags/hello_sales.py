@@ -1,5 +1,6 @@
 """A simple sales workflow."""
 from datetime import datetime, timezone
+from sales_logic import calculate_revenue
 
 from airflow.sdk import dag, task
 from datetime import datetime, timezone, timedelta
@@ -47,16 +48,10 @@ def hello_sales():
         return orders
     @task(retries=2, retry_delay=timedelta(seconds=10))
     def transform(orders):
-        for row in orders:
-            if row["quantity"] <= 0:
-                raise AirflowFailException(
-                    f"Invalid quantity for {row['product']}"
-                )
-
-        return sum(
-            row["quantity"] * row["unit_price_cents"]
-            for row in orders
-        )
+        try:
+            return calculate_revenue(orders)
+        except ValueError as error:
+            raise AirflowFailException(str(error)) from error
     @task
     def report(total_cents):
         print(f"Total sales: ${total_cents / 100:.2f}")
