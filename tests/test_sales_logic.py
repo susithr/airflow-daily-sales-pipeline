@@ -27,3 +27,10 @@ def test_negative_price_is_rejected():
 
     with pytest.raises(ValueError, match="Invalid price"):
         calculate_revenue(orders)
+def test_zero_quantity_is_rejected():
+    orders = [
+        {"product": "Notebook", "quantity": 0, "unit_price_cents": 500},
+    ]
+
+    with pytest.raises(ValueError, match="Invalid quantity"):
+        calculate_revenue(orders)
